@@ -1,0 +1,56 @@
+variables:
+  PACKAGE_REGISTRY_URL: "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/wimboot"
+  PACKAGE_ARCHIVE: "wimboot-$CI_COMMIT_TAG.tar.gz"
+
+stages:
+  - build
+  - publish
+  - release
+
+build_wimboot:
+  stage: build
+  image: registry.gitlab.com/multios-usb/builder:202401061637
+  tags:
+    - saas-linux-medium-amd64
+  script: |
+    ./build_wimboot.sh
+    echo -e "wimboot binary files and source code:\n$CI_PROJECT_URL/-/releases/$CI_COMMIT_TAG" > release/ReadMe.txt
+    mv release wimboot-$CI_COMMIT_TAG
+    tar -czf ${PACKAGE_ARCHIVE} wimboot-$CI_COMMIT_TAG
+  artifacts:
+    name: "wimboot_$CI_COMMIT_TAG"
+    paths:
+      - ${PACKAGE_ARCHIVE}
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+\-\d+$/'
+
+upload_binaries:
+  stage: publish
+  image: curlimages/curl:latest
+  needs:
+    - job: build_wimboot
+      artifacts: true
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+\-\d+$/'
+  script:
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${PACKAGE_ARCHIVE} ${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/${PACKAGE_ARCHIVE}
+
+release_wimboot:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli
+  needs:
+    - job: upload_binaries
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+\-\d+$/'
+  script:
+    - echo "Creating a release for $CI_COMMIT_TAG"
+  release:
+    name: "Release $CI_COMMIT_TAG"
+    description: 'Release $CI_COMMIT_TAG'
+    tag_name: '$CI_COMMIT_TAG'
+    assets:
+      links:
+        - name: '${PACKAGE_ARCHIVE}'
+          url: "$PACKAGE_REGISTRY_URL/$CI_COMMIT_TAG/${PACKAGE_ARCHIVE}"
+          filepath: '/${PACKAGE_ARCHIVE}'
