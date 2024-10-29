@@ -1,6 +1,7 @@
 variables:
   PACKAGE_REGISTRY_URL: "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/wimboot"
   PACKAGE_ARCHIVE: "wimboot-$CI_COMMIT_TAG.tar.gz"
+  PACKAGE_ARCHIVE_SRC: "wimboot-$CI_COMMIT_TAG.src.tar.gz"
 
 stages:
   - build
@@ -14,19 +15,20 @@ build_wimboot:
     - saas-linux-medium-amd64
   script: |
     ./build_wimboot.sh
-    echo -e "wimboot binary files and source code:\n$CI_PROJECT_URL/-/releases/$CI_COMMIT_TAG" > release/ReadMe.txt
-    mv release wimboot-$CI_COMMIT_TAG
-    tar -czf ${PACKAGE_ARCHIVE} wimboot-$CI_COMMIT_TAG
+    echo -e "MultiOS-USB wimboot binary files and source code:\n$CI_PROJECT_URL/-/releases/$CI_COMMIT_TAG" > ReadMe.txt
+    tar -czf ${PACKAGE_ARCHIVE} ReadMe.txt wimboot.i386.unsigned wimboot.x86_64.unsigned
+    mv wimboot.src.tar.gz ${PACKAGE_ARCHIVE_SRC}
   artifacts:
     name: "wimboot_$CI_COMMIT_TAG"
     paths:
       - ${PACKAGE_ARCHIVE}
+      - ${PACKAGE_ARCHIVE_SRC}
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+\-\d+$/'
 
 upload_binaries:
   stage: publish
-  image: curlimages/curl:latest
+  image: curlimages/curl
   needs:
     - job: build_wimboot
       artifacts: true
@@ -35,6 +37,7 @@ upload_binaries:
   script:
     - |
       curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${PACKAGE_ARCHIVE} ${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/${PACKAGE_ARCHIVE}
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${PACKAGE_ARCHIVE_SRC} ${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/${PACKAGE_ARCHIVE_SRC}
 
 release_wimboot:
   stage: release
@@ -46,11 +49,14 @@ release_wimboot:
   script:
     - echo "Creating a release for $CI_COMMIT_TAG"
   release:
-    name: "Release $CI_COMMIT_TAG"
-    description: 'Release $CI_COMMIT_TAG'
+    name: "MultiOS-USB wimboot $CI_COMMIT_TAG"
+    description: 'Changes: $CI_PROJECT_URL/-/commits'
     tag_name: '$CI_COMMIT_TAG'
     assets:
       links:
         - name: '${PACKAGE_ARCHIVE}'
           url: "$PACKAGE_REGISTRY_URL/$CI_COMMIT_TAG/${PACKAGE_ARCHIVE}"
           filepath: '/${PACKAGE_ARCHIVE}'
+        - name: '${PACKAGE_ARCHIVE_SRC}'
+          url: "$PACKAGE_REGISTRY_URL/$CI_COMMIT_TAG/${PACKAGE_ARCHIVE_SRC}"
+          filepath: '/${PACKAGE_ARCHIVE_SRC}'

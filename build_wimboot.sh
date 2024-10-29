@@ -14,11 +14,10 @@ git apply ../0003_Provide-common-vdisk_read_mem_file-cpio-handler.patch
 git apply ../0004_Support-EFI-linux-initrd-media-loading.patch
 
 make -C src clean
+rm -rf .git
 
-(cd .. && mkdir release && tar -czf release/wimboot-source.tar.gz wimboot)
+tar -czf ../wimboot.src.tar.gz $(ls -A)
 
-make -C src wimboot.i386 wimboot.x86_64
+make -C src wimboot.i386.unsigned wimboot.x86_64.unsigned
 
-cd ../release
-mv ../wimboot/src/{wimboot.i386,wimboot.x86_64} .
-sha256sum wimboot.i386 wimboot.x86_64 wimboot-source.tar.gz > SHA256SUMS
+mv src/{wimboot.i386.unsigned,wimboot.x86_64.unsigned} ..
