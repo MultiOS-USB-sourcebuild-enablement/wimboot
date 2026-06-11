@@ -14,7 +14,7 @@ git apply ../0003_Provide-common-vdisk_read_mem_file-cpio-handler.patch
 git apply ../0004_Support-EFI-linux-initrd-media-loading.patch
 
 make -C src clean
-rm -rf .git
+rm -rf .git wimboot
 
 tar -czf ../wimboot.src.tar.gz $(ls -A)
 
