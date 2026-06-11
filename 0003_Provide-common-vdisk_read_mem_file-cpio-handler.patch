@@ -13,7 +13,7 @@ Signed-off-by: a1ive <ligenlive@gmail.com>
  3 files changed, 18 insertions(+), 17 deletions(-)
 
 diff --git a/src/main.c b/src/main.c
-index 371c822..7274344 100644
+index 41c8faa..ff2b78b 100644
 --- a/src/main.c
 +++ b/src/main.c
 @@ -226,20 +226,6 @@ static int is_empty_pgh ( const void *pgh ) {
@@ -55,7 +55,7 @@ index 371c822..7274344 100644
  
  	/* Check for special-case files */
  	if ( strcasecmp ( name, "bootmgr.exe" ) == 0 ) {
-@@ -467,7 +453,7 @@ int main ( void ) {
+@@ -466,7 +452,7 @@ int main ( void ) {
  	/* Read bootmgr.exe into memory */
  	if ( ! bootmgr )
  		die ( "FATAL: no bootmgr.exe\n" );
@@ -65,7 +65,7 @@ index 371c822..7274344 100644
  	} else {
  		padded_len = ( ( bootmgr->len + PAGE_SIZE - 1 ) &
 diff --git a/src/vdisk.c b/src/vdisk.c
-index 7885a5b..6685b14 100644
+index 4fe8224..cb78cee 100644
 --- a/src/vdisk.c
 +++ b/src/vdisk.c
 @@ -613,6 +613,19 @@ void vdisk_read ( uint64_t lba, unsigned int count, void *data ) {
@@ -89,10 +89,10 @@ index 7885a5b..6685b14 100644
   * Add file to virtual disk
   *
 diff --git a/src/vdisk.h b/src/vdisk.h
-index 7cae51c..b3b526b 100644
+index e3953dd..8302795 100644
 --- a/src/vdisk.h
 +++ b/src/vdisk.h
-@@ -611,6 +611,8 @@ struct vdisk_file {
+@@ -613,6 +613,8 @@ struct vdisk_file {
  extern struct vdisk_file vdisk_files[VDISK_MAX_FILES];
  
  extern void vdisk_read ( uint64_t lba, unsigned int count, void *data );

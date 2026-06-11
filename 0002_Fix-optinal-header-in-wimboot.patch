@@ -9,10 +9,10 @@ Thanks @Melanie.Malachite (#1)
  1 file changed, 1 insertion(+)
 
 diff --git a/src/elf2efi.c b/src/elf2efi.c
-index 3109486..39c8d66 100644
+index b4dd4c0..f9a5f4e 100644
 --- a/src/elf2efi.c
 +++ b/src/elf2efi.c
-@@ -249,6 +249,7 @@ static struct pe_header efi_pe_header = {
+@@ -294,6 +294,7 @@ static struct pe_header efi_pe_header = {
  			.MinorLinkerVersion = 42,
  			.SectionAlignment = EFI_IMAGE_ALIGN,
  			.FileAlignment = EFI_FILE_ALIGN,

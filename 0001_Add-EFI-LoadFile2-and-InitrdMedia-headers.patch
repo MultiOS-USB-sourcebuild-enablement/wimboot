@@ -8,20 +8,20 @@ Signed-off-by: a1ive <ligenlive@gmail.com>
  src/efi.h                          |  1 +
  src/efi/Guid/LinuxEfiInitrdMedia.h | 30 ++++++++++++
  src/efi/Protocol/LoadFile2.h       | 78 ++++++++++++++++++++++++++++++
- src/efifile.c                      |  2 +
+ src/efifile.c                      |  3 ++
  src/efiguid.c                      |  5 ++
- 5 files changed, 116 insertions(+)
+ 5 files changed, 117 insertions(+)
  create mode 100644 src/efi/Guid/LinuxEfiInitrdMedia.h
  create mode 100644 src/efi/Protocol/LoadFile2.h
 
 diff --git a/src/efi.h b/src/efi.h
-index afc7c42..239d64d 100644
+index d36877b..b40618d 100644
 --- a/src/efi.h
 +++ b/src/efi.h
-@@ -48,5 +48,6 @@ extern EFI_GUID efi_device_path_protocol_guid;
- extern EFI_GUID efi_graphics_output_protocol_guid;
+@@ -49,5 +49,6 @@ extern EFI_GUID efi_graphics_output_protocol_guid;
  extern EFI_GUID efi_loaded_image_protocol_guid;
  extern EFI_GUID efi_simple_file_system_protocol_guid;
+ extern EFI_GUID efi_global_variable_guid;
 +extern EFI_GUID efi_load_file2_protocol_guid;
  
  #endif /* _EFI_H */
@@ -146,34 +146,35 @@ index 0000000..2d3a5fd
 +
 +#endif
 diff --git a/src/efifile.c b/src/efifile.c
-index 4ce2cd3..f5369d5 100644
+index 9beb82c..af633ff 100644
 --- a/src/efifile.c
 +++ b/src/efifile.c
-@@ -35,6 +35,8 @@
- #include "wimfile.h"
+@@ -36,6 +36,9 @@
  #include "efi.h"
+ #include "efipath.h"
  #include "efifile.h"
 +#include "efi/Protocol/LoadFile2.h"
 +#include "efi/Guid/LinuxEfiInitrdMedia.h"
++
  
  /** bootmgfw.efi path within WIM */
  static const wchar_t bootmgfw_path[] = L"\\Windows\\Boot\\EFI\\bootmgfw.efi";
 diff --git a/src/efiguid.c b/src/efiguid.c
-index 00313fa..6dc3755 100644
+index a06b15d..b2cb09b 100644
 --- a/src/efiguid.c
 +++ b/src/efiguid.c
-@@ -31,6 +31,7 @@
- #include "efi/Protocol/GraphicsOutput.h"
+@@ -32,6 +32,7 @@
  #include "efi/Protocol/LoadedImage.h"
  #include "efi/Protocol/SimpleFileSystem.h"
+ #include "efi/Guid/GlobalVariable.h"
 +#include "efi/Protocol/LoadFile2.h"
  
  /** Block I/O protocol GUID */
  EFI_GUID efi_block_io_protocol_guid
-@@ -51,3 +52,7 @@ EFI_GUID efi_loaded_image_protocol_guid
- /** Simple file system protocol GUID */
- EFI_GUID efi_simple_file_system_protocol_guid
- 	= EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
+@@ -56,3 +57,7 @@ EFI_GUID efi_simple_file_system_protocol_guid
+ /** Global variable GUID */
+ EFI_GUID efi_global_variable_guid
+ 	= EFI_GLOBAL_VARIABLE;
 +
 +/** Load File 2 protocol GUID */
 +EFI_GUID efi_load_file2_protocol_guid

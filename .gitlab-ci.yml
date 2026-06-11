@@ -10,7 +10,7 @@ stages:
 
 build_wimboot:
   stage: build
-  image: registry.gitlab.com/multios-usb/builder:202401061637
+  image: registry.gitlab.com/multios-usb/builder
   tags:
     - saas-linux-medium-amd64
   script: |
@@ -25,6 +25,7 @@ build_wimboot:
       - ${PACKAGE_ARCHIVE_SRC}
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+\-\d+$/'
+    - when: manual
 
 upload_binaries:
   stage: publish
