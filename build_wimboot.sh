@@ -5,8 +5,8 @@ set -euo pipefail
 wimboot_tag="v2.9.0"
 
 # Download wimboot source
-git clone --single-branch https://github.com/ipxe/wimboot.git && cd wimboot
-git checkout ${wimboot_tag}
+git clone --depth 1 --branch ${wimboot_tag} https://github.com/ipxe/wimboot.git
+cd wimboot
 
 git apply ../0001_Add-EFI-LoadFile2-and-InitrdMedia-headers.patch
 git apply ../0002_Fix-optional-header-in-wimboot.patch
