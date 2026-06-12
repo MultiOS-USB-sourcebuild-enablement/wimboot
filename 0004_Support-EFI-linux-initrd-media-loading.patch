@@ -1,14 +1,15 @@
-From 36d20c61fb0666e2530416aef700fe086f60a3e6 Mon Sep 17 00:00:00 2001
+From a8215cddfed785425d85c61701d1c247bdf93369 Mon Sep 17 00:00:00 2001
 From: a1ive <ligenlive@gmail.com>
 Date: Sat, 4 Nov 2023 11:42:09 +0800
 Subject: [PATCH] Support EFI linux initrd media loading
 
+Signed-off-by: a1ive <ligenlive@gmail.com>
 ---
- src/efifile.c | 177 +++++++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 146 insertions(+), 31 deletions(-)
+ src/efifile.c | 176 +++++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 146 insertions(+), 30 deletions(-)
 
 diff --git a/src/efifile.c b/src/efifile.c
-index af633ff..8e56923 100644
+index e4192d0..8e56923 100644
 --- a/src/efifile.c
 +++ b/src/efifile.c
 @@ -31,6 +31,7 @@
@@ -19,15 +20,7 @@ index af633ff..8e56923 100644
  #include "wimpatch.h"
  #include "wimfile.h"
  #include "efi.h"
-@@ -39,7 +40,6 @@
- #include "efi/Protocol/LoadFile2.h"
- #include "efi/Guid/LinuxEfiInitrdMedia.h"
- 
--
- /** bootmgfw.efi path within WIM */
- static const wchar_t bootmgfw_path[] = L"\\Windows\\Boot\\EFI\\bootmgfw.efi";
- 
-@@ -60,12 +60,36 @@ static const wchar_t *efi_wim_paths[] = {
+@@ -59,12 +60,36 @@ static const wchar_t *efi_wim_paths[] = {
  	NULL
  };
  
@@ -64,7 +57,7 @@ index af633ff..8e56923 100644
  /**
   * Read from EFI file
   *
-@@ -124,6 +148,110 @@ static void efi_patch_bcd ( struct vdisk_file *vfile __unused, void *data,
+@@ -123,6 +148,110 @@ static void efi_patch_bcd ( struct vdisk_file *vfile __unused, void *data,
  	}
  }
  
@@ -175,7 +168,7 @@ index af633ff..8e56923 100644
  /**
   * Extract files from EFI file system
   *
-@@ -140,15 +268,18 @@ void efi_extract ( EFI_HANDLE handle ) {
+@@ -139,15 +268,18 @@ void efi_extract ( EFI_HANDLE handle ) {
  		CHAR16 name[ VDISK_NAME_LEN + 1 /* WNUL */ ];
  	} __attribute__ (( packed )) info;
  	char name[ VDISK_NAME_LEN + 1 /* NUL */ ];
@@ -197,7 +190,7 @@ index af633ff..8e56923 100644
  	/* Open file system */
  	if ( ( efirc = bs->OpenProtocol ( handle,
  					  &efi_simple_file_system_protocol_guid,
-@@ -168,6 +299,9 @@ void efi_extract ( EFI_HANDLE handle ) {
+@@ -167,6 +299,9 @@ void efi_extract ( EFI_HANDLE handle ) {
  	bs->CloseProtocol ( handle, &efi_simple_file_system_protocol_guid,
  			    efi_image_handle, NULL );
  
@@ -207,7 +200,7 @@ index af633ff..8e56923 100644
  	/* Read root directory */
  	while ( 1 ) {
  
-@@ -194,29 +328,10 @@ void efi_extract ( EFI_HANDLE handle ) {
+@@ -193,29 +328,10 @@ void efi_extract ( EFI_HANDLE handle ) {
  
  		/* Add file */
  		snprintf ( name, sizeof ( name ), "%ls", wname );
@@ -239,7 +232,7 @@ index af633ff..8e56923 100644
  	/* Use only boot<arch>.efi if provided */
  	if ( bootarch ) {
  		if ( bootmgfw )
-@@ -228,21 +343,21 @@ void efi_extract ( EFI_HANDLE handle ) {
+@@ -227,21 +343,21 @@ void efi_extract ( EFI_HANDLE handle ) {
  	}
  
  	/* Extract bootloader(s) from WIM if none are explicitly provided */

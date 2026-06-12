@@ -1,7 +1,7 @@
 From 0890cc86c970659dcbefdf5c09c80d975f7184e2 Mon Sep 17 00:00:00 2001
 From: MexIT <mexit.dev@gmail.com>
 Date: Tue, 29 Oct 2024 01:24:47 +0000
-Subject: [PATCH] Fix optinal header in wimboot 2.8.0
+Subject: [PATCH] Fix optional header in wimboot
 
 Thanks @Melanie.Malachite (#1)
 ---

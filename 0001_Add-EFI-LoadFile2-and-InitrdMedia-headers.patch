@@ -8,9 +8,9 @@ Signed-off-by: a1ive <ligenlive@gmail.com>
  src/efi.h                          |  1 +
  src/efi/Guid/LinuxEfiInitrdMedia.h | 30 ++++++++++++
  src/efi/Protocol/LoadFile2.h       | 78 ++++++++++++++++++++++++++++++
- src/efifile.c                      |  3 ++
+ src/efifile.c                      |  2 +
  src/efiguid.c                      |  5 ++
- 5 files changed, 117 insertions(+)
+ 5 files changed, 116 insertions(+)
  create mode 100644 src/efi/Guid/LinuxEfiInitrdMedia.h
  create mode 100644 src/efi/Protocol/LoadFile2.h
 
@@ -146,16 +146,15 @@ index 0000000..2d3a5fd
 +
 +#endif
 diff --git a/src/efifile.c b/src/efifile.c
-index 9beb82c..af633ff 100644
+index 9beb82c..e4192d0 100644
 --- a/src/efifile.c
 +++ b/src/efifile.c
-@@ -36,6 +36,9 @@
+@@ -36,6 +36,8 @@
  #include "efi.h"
  #include "efipath.h"
  #include "efifile.h"
 +#include "efi/Protocol/LoadFile2.h"
 +#include "efi/Guid/LinuxEfiInitrdMedia.h"
-+
  
  /** bootmgfw.efi path within WIM */
  static const wchar_t bootmgfw_path[] = L"\\Windows\\Boot\\EFI\\bootmgfw.efi";
